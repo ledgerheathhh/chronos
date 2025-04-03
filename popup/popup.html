@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Chronos - 网页使用时长记录</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Chronos</h1>
+      <p class="subtitle">网页使用时长记录</p>
+    </header>
+    
+    <section class="current-site">
+      <h2>当前网站</h2>
+      <div class="site-info">
+        <div class="domain-name" id="current-domain">加载中...</div>
+        <div class="time-info">
+          <div class="time-item">
+            <span class="label">今日:</span>
+            <span class="value" id="today-time">0分钟</span>
+          </div>
+          <div class="time-item">
+            <span class="label">总计:</span>
+            <span class="value" id="total-time">0分钟</span>
+          </div>
+          <div class="time-item">
+            <span class="label">访问次数:</span>
+            <span class="value" id="visit-count">0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="top-sites">
+      <div class="section-header">
+        <h2>使用时长排行</h2>
+        <div class="time-filter">
+          <button class="filter-btn active" data-filter="today">今日</button>
+          <button class="filter-btn" data-filter="week">本周</button>
+          <button class="filter-btn" data-filter="month">本月</button>
+          <button class="filter-btn" data-filter="all">全部</button>
+        </div>
+      </div>
+      <div class="sites-list" id="sites-list">
+        <div class="loading">加载中...</div>
+      </div>
+    </section>
+    
+    <footer>
+      <button id="options-btn" class="footer-btn">设置</button>
+      <button id="export-btn" class="footer-btn">导出数据</button>
+    </footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

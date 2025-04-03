@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Chronos - 设置</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Chronos 设置</h1>
+      <p class="subtitle">自定义您的网页使用时长记录体验</p>
+    </header>
+    
+    <section class="settings-section">
+      <h2>数据管理</h2>
+      <div class="setting-item">
+        <div class="setting-info">
+          <h3>清除所有数据</h3>
+          <p>删除所有已记录的网站使用时长数据。此操作不可撤销。</p>
+        </div>
+        <button id="clear-data-btn" class="danger-btn">清除数据</button>
+      </div>
+      
+      <div class="setting-item">
+        <div class="setting-info">
+          <h3>导出数据</h3>
+          <p>将您的使用时长数据导出为JSON文件。</p>
+        </div>
+        <button id="export-data-btn" class="primary-btn">导出</button>
+      </div>
+      
+      <div class="setting-item">
+        <div class="setting-info">
+          <h3>导入数据</h3>
+          <p>从JSON文件导入使用时长数据。</p>
+        </div>
+        <div class="import-container">
+          <input type="file" id="import-file" accept=".json">
+          <button id="import-data-btn" class="primary-btn">导入</button>
+        </div>
+      </div>
+    </section>
+    
+    <section class="settings-section">
+      <h2>显示设置</h2>
+      <div class="setting-item">
+        <div class="setting-info">
+          <h3>时间格式</h3>
+          <p>选择您喜欢的时间显示格式。</p>
+        </div>
+        <select id="time-format" class="select-input">
+          <option value="compact">简洁 (1小时30分钟)</option>
+          <option value="detailed">详细 (1小时30分钟45秒)</option>
+        </select>
+      </div>
+    </section>
+    
+    <section class="settings-section">
+      <h2>关于</h2>
+      <div class="about-info">
+        <p>Chronos - 网页使用时长记录</p>
+        <p>版本: 1.0</p>
+        <p>帮助您追踪和管理网络时间</p>
+      </div>
+    </section>
+    
+    <footer>
+      <div id="status-message" class="status-message"></div>
+      <button id="save-btn" class="primary-btn">保存设置</button>
+    </footer>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>
