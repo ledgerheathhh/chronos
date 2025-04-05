@@ -154,22 +154,31 @@ function showSitesRanking(filter = 'today') {
     sitesListElement.innerHTML = '';
     
     if (filteredData.length === 0) {
-      sitesListElement.innerHTML = '<div class="no-data">No data available</div>';
+      sitesListElement.innerHTML = '<div class="no-data"><i class="fas fa-info-circle"></i> No data available</div>';
       return;
     }
     
-    filteredData.forEach(item => {
+    filteredData.forEach((item, index) => {
       const siteItem = document.createElement('div');
       siteItem.className = 'site-item';
+      // Add animation delay based on index
+      siteItem.style.animationDelay = `${index * 50}ms`;
       
       const siteDomain = document.createElement('div');
       siteDomain.className = 'site-domain';
-      siteDomain.textContent = item.domain;
+      
+      // Add icon based on ranking
+      let icon = 'fa-globe';
+      if (index === 0) icon = 'fa-trophy';
+      else if (index === 1) icon = 'fa-medal';
+      else if (index === 2) icon = 'fa-award';
+      
+      siteDomain.innerHTML = `<i class="fas ${icon}"></i> ${item.domain}`;
       siteDomain.title = item.domain;
       
       const siteTime = document.createElement('div');
       siteTime.className = 'site-time';
-      siteTime.textContent = formatTime(item.time);
+      siteTime.innerHTML = `<i class="fas fa-clock"></i> ${formatTime(item.time)}`;
       
       siteItem.appendChild(siteDomain);
       siteItem.appendChild(siteTime);
