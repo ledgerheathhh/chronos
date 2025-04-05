@@ -4,11 +4,27 @@
   box-sizing: border-box;
 }
 
+:root {
+  --primary-color: #4a6cf7;
+  --primary-light: #eef2ff;
+  --secondary-color: #6c757d;
+  --text-color: #2d3748;
+  --text-light: #718096;
+  --bg-color: #f8fafc;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.05);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --transition: all 0.3s ease;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  color: #333;
-  background-color: #f9f9f9;
-  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  line-height: 1.5;
 }
 
 .container {
@@ -21,18 +37,41 @@ header {
   text-align: center;
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #eaeaea;
+  border-bottom: 1px solid var(--border-color);
 }
 
 h1 {
   font-size: 28px;
-  color: #2c3e50;
+  font-weight: 700;
+  color: var(--primary-color);
   margin-bottom: 5px;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+h1 i {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .subtitle {
   font-size: 16px;
-  color: #7f8c8d;
+  color: var(--text-light);
+  font-weight: 500;
 }
 
 section {
@@ -40,24 +79,40 @@ section {
 }
 
 h2 {
-  font-size: 20px;
+  font-size: 18px;
   margin-bottom: 15px;
-  color: #2c3e50;
+  color: var(--text-color);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   padding-bottom: 8px;
-  border-bottom: 1px solid #eaeaea;
+  border-bottom: 1px solid var(--border-color);
+}
+
+h2 i {
+  color: var(--primary-color);
 }
 
 h3 {
   font-size: 16px;
   margin-bottom: 5px;
-  color: #2c3e50;
+  color: var(--text-color);
+  font-weight: 600;
 }
 
 .settings-section {
-  background-color: #fff;
-  border-radius: 8px;
+  background-color: var(--card-bg);
+  border-radius: var(--radius-md);
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+  margin-bottom: 20px;
+}
+
+.settings-section:hover {
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
 }
 
 .setting-item {
@@ -65,7 +120,21 @@ h3 {
   justify-content: space-between;
   align-items: center;
   padding: 15px 0;
-  border-bottom: 1px solid #f1f1f1;
+  border-bottom: 1px dashed var(--border-color);
+  animation: fadeIn 0.5s ease forwards;
+  opacity: 0;
+  transform: translateY(5px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .setting-item:last-child {
@@ -78,61 +147,136 @@ h3 {
 
 .setting-info p {
   font-size: 14px;
-  color: #7f8c8d;
+  color: var(--text-light);
 }
 
 .primary-btn, .danger-btn {
   padding: 8px 16px;
-  border-radius: 4px;
-  border: none;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
   font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: var(--transition);
+  font-weight: 500;
 }
 
 .primary-btn {
-  background-color: #3498db;
-  color: white;
+  background-color: var(--card-bg);
+  color: var(--text-color);
 }
 
 .primary-btn:hover {
-  background-color: #2980b9;
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }
 
 .danger-btn {
-  background-color: #e74c3c;
-  color: white;
+  background-color: var(--card-bg);
+  color: #e74c3c;
+  border-color: #e74c3c;
 }
 
 .danger-btn:hover {
-  background-color: #c0392b;
+  background-color: #e74c3c;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }
 
 .select-input {
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
   font-size: 14px;
   min-width: 200px;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  transition: var(--transition);
+}
+
+.select-input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-light);
 }
 
 .import-container {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
+/* 添加文件输入框的样式 */
 #import-file {
-  margin-right: 10px;
+  position: relative;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-color);
+  background-color: var(--bg-color);
+  width: 100%;
+  transition: var(--transition);
+  cursor: pointer;
 }
 
+#import-file:hover {
+  border-color: var(--primary-color);
+  background-color: var(--primary-light);
+}
+
+/* 改进状态消息样式 */
+.status-message.success::before {
+  content: '\f058'; /* Font Awesome check circle icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
+
+.status-message.error::before {
+  content: '\f057'; /* Font Awesome times circle icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
+
+/* 添加设置项的悬停效果 */
+.setting-item:hover {
+  background-color: var(--primary-light);
+  border-radius: var(--radius-sm);
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+/* 美化关于部分 */
 .about-info {
-  padding: 15px 0;
+  padding: 15px;
   text-align: center;
+  background-color: var(--primary-light);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--primary-color);
+  animation: fadeIn 0.5s ease forwards;
+  opacity: 0;
+  transform: translateY(5px);
+}
+
+/* 添加保存按钮的特殊样式 */
+#save-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  padding: 10px 20px;
+  font-weight: 600;
+}
+
+#save-btn:hover {
+  background-color: #3a5bd9; /* 稍微深一点的主色调 */
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .about-info p {
   margin-bottom: 5px;
-  color: #7f8c8d;
+  color: var(--text-light);
 }
 
 footer {
@@ -140,16 +284,24 @@ footer {
   justify-content: space-between;
   align-items: center;
   margin-top: 20px;
+  gap: 10px;
 }
 
 .status-message {
   font-size: 14px;
+  font-weight: 500;
 }
 
 .status-message.success {
-  color: #27ae60;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .status-message.error {
   color: #e74c3c;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }

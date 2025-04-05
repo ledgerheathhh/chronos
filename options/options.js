@@ -133,8 +133,15 @@ function importData() {
 // Display status message
 function showStatusMessage(message, type) {
   const statusElement = document.getElementById('status-message');
-  statusElement.textContent = message;
+  statusElement.textContent = '';
   statusElement.className = 'status-message ' + type;
+  
+  // Add icon based on message type
+  if (type === 'success' || type === 'error') {
+    statusElement.textContent = ' ' + message;
+  } else {
+    statusElement.textContent = message;
+  }
   
   // Clear message after 3 seconds
   setTimeout(function() {
