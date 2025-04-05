@@ -1,42 +1,42 @@
-// 格式化时间（毫秒转为可读格式）
+// Format time (convert milliseconds to readable format)
 function formatTime(milliseconds) {
-  if (milliseconds < 1000) return "不到1秒";
+  if (milliseconds < 1000) return "Less than 1 second";
   
   const seconds = Math.floor(milliseconds / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
   
   if (hours > 0) {
-    return `${hours}小时${minutes % 60}分钟`;
+    return `${hours} hour${hours > 1 ? 's' : ''} ${minutes % 60} minute${minutes % 60 !== 1 ? 's' : ''}`;
   } else if (minutes > 0) {
-    return `${minutes}分钟`;
+    return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
   } else {
-    return `${seconds}秒`;
+    return `${seconds} second${seconds !== 1 ? 's' : ''}`;
   }
 }
 
-// 获取今天的日期字符串 (YYYY-MM-DD)
+// Get today's date string (YYYY-MM-DD)
 function getTodayString() {
   return new Date().toISOString().split('T')[0];
 }
 
-// 获取本周的开始日期
+// Get the start date of current week
 function getStartOfWeek() {
   const now = new Date();
-  const dayOfWeek = now.getDay() || 7; // 如果是周日，getDay()返回0，我们将其视为7
+  const dayOfWeek = now.getDay() || 7; // If Sunday, getDay() returns 0, we treat it as 7
   const startOfWeek = new Date(now);
   startOfWeek.setDate(now.getDate() - dayOfWeek + 1);
   return startOfWeek.toISOString().split('T')[0];
 }
 
-// 获取本月的开始日期
+// Get the start date of current month
 function getStartOfMonth() {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   return startOfMonth.toISOString().split('T')[0];
 }
 
-// 显示当前网站信息
+// Display current website information
 function showCurrentSiteInfo() {
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     if (tabs.length === 0) return;
@@ -48,7 +48,7 @@ function showCurrentSiteInfo() {
       domain = new URL(url).hostname;
       document.getElementById('current-domain').textContent = domain;
     } catch (e) {
-      document.getElementById('current-domain').textContent = "无效网址";
+      document.getElementById('current-domain').textContent = "Invalid URL";
       return;
     }
     
@@ -57,8 +57,8 @@ function showCurrentSiteInfo() {
       const siteData = timeData[domain];
       
       if (!siteData) {
-        document.getElementById('today-time').textContent = "0分钟";
-        document.getElementById('total-time').textContent = "0分钟";
+        document.getElementById('today-time').textContent = "0 minutes";
+        document.getElementById('total-time').textContent = "0 minutes";
         document.getElementById('visit-count').textContent = "0";
         return;
       }
@@ -73,10 +73,10 @@ function showCurrentSiteInfo() {
   });
 }
 
-// 显示网站排行
+// Display website ranking
 function showSitesRanking(filter = 'today') {
   const sitesListElement = document.getElementById('sites-list');
-  sitesListElement.innerHTML = '<div class="loading">加载中...</div>';
+  sitesListElement.innerHTML = '<div class="loading">Loading...</div>';
   
   chrome.storage.local.get(['timeData'], function(result) {
     const timeData = result.timeData || {};
@@ -89,7 +89,7 @@ function showSitesRanking(filter = 'today') {
     // 根据过滤条件处理数据
     switch (filter) {
       case 'today':
-        // 今日数据
+        // Today's data
         for (const domain in timeData) {
           const siteData = timeData[domain];
           const todayTime = siteData.daily && siteData.daily[today] ? siteData.daily[today] : 0;
@@ -100,7 +100,7 @@ function showSitesRanking(filter = 'today') {
         break;
         
       case 'week':
-        // 本周数据
+        // This week's data
         for (const domain in timeData) {
           const siteData = timeData[domain];
           let weekTime = 0;
@@ -120,7 +120,7 @@ function showSitesRanking(filter = 'today') {
         break;
         
       case 'month':
-        // 本月数据
+        // This month's data
         for (const domain in timeData) {
           const siteData = timeData[domain];
           let monthTime = 0;
@@ -140,21 +140,21 @@ function showSitesRanking(filter = 'today') {
         break;
         
       case 'all':
-        // 所有数据
+        // All data
         for (const domain in timeData) {
           filteredData.push({ domain, time: timeData[domain].totalTime });
         }
         break;
     }
     
-    // 按时间排序
+    // Sort by time
     filteredData.sort((a, b) => b.time - a.time);
     
-    // 更新UI
+    // Update UI
     sitesListElement.innerHTML = '';
     
     if (filteredData.length === 0) {
-      sitesListElement.innerHTML = '<div class="no-data">暂无数据</div>';
+      sitesListElement.innerHTML = '<div class="no-data">No data available</div>';
       return;
     }
     
@@ -178,25 +178,25 @@ function showSitesRanking(filter = 'today') {
   });
 }
 
-// 初始化过滤按钮
+// Initialize filter buttons
 function initFilterButtons() {
   const filterButtons = document.querySelectorAll('.filter-btn');
   
   filterButtons.forEach(button => {
     button.addEventListener('click', function() {
-      // 移除所有按钮的active类
+      // Remove active class from all buttons
       filterButtons.forEach(btn => btn.classList.remove('active'));
-      // 为当前按钮添加active类
+      // Add active class to current button
       this.classList.add('active');
       
-      // 显示对应的排行数据
+      // Display corresponding ranking data
       const filter = this.getAttribute('data-filter');
       showSitesRanking(filter);
     });
   });
 }
 
-// 导出数据
+// Export data
 function exportData() {
   chrome.storage.local.get(['timeData'], function(result) {
     const timeData = result.timeData || {};
@@ -212,22 +212,22 @@ function exportData() {
   });
 }
 
-// 初始化页面
+// Initialize page
 document.addEventListener('DOMContentLoaded', function() {
-  // 显示当前网站信息
+  // Display current website information
   showCurrentSiteInfo();
   
-  // 显示默认排行（今日）
+  // Display default ranking (today)
   showSitesRanking('today');
   
-  // 初始化过滤按钮
+  // Initialize filter buttons
   initFilterButtons();
   
-  // 设置按钮事件
+  // Settings button event
   document.getElementById('options-btn').addEventListener('click', function() {
     chrome.runtime.openOptionsPage();
   });
   
-  // 导出按钮事件
+  // Export button event
   document.getElementById('export-btn').addEventListener('click', exportData);
 });

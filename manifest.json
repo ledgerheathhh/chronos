@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Chronos - 网页使用时长记录",
+  "name": "Chronos - Website Usage Time Tracker",
   "version": "1.0",
-  "description": "追踪并记录您在各个网站上花费的时间",
+  "description": "Track and record the time you spend on various websites",
   "permissions": ["storage", "tabs", "activeTab"],
   "background": {
     "service_worker": "background.js"

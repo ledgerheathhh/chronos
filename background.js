@@ -1,4 +1,4 @@
-// 存储当前活动标签的信息
+// Store information about the current active tab
 let currentTab = {
   id: null,
   url: null,
@@ -6,26 +6,26 @@ let currentTab = {
   startTime: null
 };
 
-// 从URL中提取域名
+// Extract domain from URL
 function extractDomain(url) {
   if (!url) return null;
   try {
     const urlObj = new URL(url);
     return urlObj.hostname;
   } catch (e) {
-    console.error("URL解析错误:", e);
+    console.error("URL parsing error:", e);
     return null;
   }
 }
 
-// 更新当前标签的使用时间
+// Update the usage time of the current tab
 function updateTimeSpent() {
   if (!currentTab.startTime || !currentTab.domain) return;
   
   const now = Date.now();
   const timeSpent = now - currentTab.startTime;
   
-  // 只有当停留时间超过1秒时才记录
+  // Only record if the time spent is more than 1 second
   if (timeSpent < 1000) return;
   
   chrome.storage.local.get(['timeData'], function(result) {
@@ -53,13 +53,13 @@ function updateTimeSpent() {
     chrome.storage.local.set({ timeData: timeData });
   });
   
-  // 重置开始时间以便继续追踪
+  // Reset start time to continue tracking
   currentTab.startTime = now;
 }
 
-// 当标签变为活动状态时
+// When a tab becomes active
 function handleTabActivated(activeInfo) {
-  // 保存之前标签的时间
+  // Save time for the previous tab
   updateTimeSpent();
   
   chrome.tabs.get(activeInfo.tabId, function(tab) {
@@ -98,15 +98,15 @@ function handleTabActivated(activeInfo) {
   });
 }
 
-// 当标签更新时
+// When a tab is updated
 function handleTabUpdated(tabId, changeInfo, tab) {
   if (changeInfo.status === 'complete' && tabId === currentTab.id) {
-    // 保存之前URL的时间
+    // Save time for the previous URL
     updateTimeSpent();
     
     const domain = extractDomain(tab.url);
     
-    // 如果域名没有变化，只更新URL
+    // If domain hasn't changed, just update the URL
     if (domain === currentTab.domain) {
       currentTab.url = tab.url;
       return;
@@ -140,14 +140,14 @@ function handleTabUpdated(tabId, changeInfo, tab) {
   }
 }
 
-// 当浏览器窗口获得焦点时
+// When browser window focus changes
 function handleWindowFocusChanged(windowId) {
   if (windowId === chrome.windows.WINDOW_ID_NONE) {
-    // 浏览器失去焦点，保存当前标签的时间
+    // Browser lost focus, save time for current tab
     updateTimeSpent();
     currentTab.startTime = null;
   } else {
-    // 浏览器获得焦点，重新开始计时
+    // Browser gained focus, restart timing
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       if (tabs.length > 0) {
         const tab = tabs[0];
@@ -164,15 +164,15 @@ function handleWindowFocusChanged(windowId) {
   }
 }
 
-// 定期保存数据（每30秒）
+// Periodically save data (every 30 seconds)
 setInterval(updateTimeSpent, 30000);
 
-// 注册事件监听器
+// Register event listeners
 chrome.tabs.onActivated.addListener(handleTabActivated);
 chrome.tabs.onUpdated.addListener(handleTabUpdated);
 chrome.windows.onFocusChanged.addListener(handleWindowFocusChanged);
 
-// 初始化
+// Initialize
 chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
   if (tabs.length > 0) {
     const tab = tabs[0];

@@ -1,4 +1,4 @@
-// 保存设置
+// Save settings
 function saveOptions() {
   const timeFormat = document.getElementById('time-format').value;
   
@@ -7,12 +7,12 @@ function saveOptions() {
     settings.timeFormat = timeFormat;
     
     chrome.storage.local.set({ settings: settings }, function() {
-      showStatusMessage('设置已保存', 'success');
+      showStatusMessage('Settings saved', 'success');
     });
   });
 }
 
-// 加载设置
+// Load settings
 function loadOptions() {
   chrome.storage.local.get(['settings'], function(result) {
     const settings = result.settings || {};
@@ -23,23 +23,23 @@ function loadOptions() {
   });
 }
 
-// 清除所有数据
+// Clear all data
 function clearAllData() {
-  if (confirm('确定要清除所有使用时长数据吗？此操作不可撤销。')) {
+  if (confirm('Are you sure you want to clear all usage time data? This action cannot be undone.')) {
     chrome.storage.local.get(['settings'], function(result) {
       const settings = result.settings || {};
       
-      // 清除数据但保留设置
+      // Clear data but keep settings
       chrome.storage.local.clear(function() {
         chrome.storage.local.set({ settings: settings }, function() {
-          showStatusMessage('所有数据已清除', 'success');
+          showStatusMessage('All data has been cleared', 'success');
         });
       });
     });
   }
 }
 
-// 导出数据
+// Export data
 function exportData() {
   chrome.storage.local.get(['timeData'], function(result) {
     const timeData = result.timeData || {};
@@ -53,17 +53,17 @@ function exportData() {
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click();
     
-    showStatusMessage('数据已导出', 'success');
+    showStatusMessage('Data exported', 'success');
   });
 }
 
-// 导入数据
+// Import data
 function importData() {
   const fileInput = document.getElementById('import-file');
   const file = fileInput.files[0];
   
   if (!file) {
-    showStatusMessage('请选择文件', 'error');
+    showStatusMessage('Please select a file', 'error');
     return;
   }
   
@@ -73,20 +73,20 @@ function importData() {
     try {
       const importedData = JSON.parse(e.target.result);
       
-      // 验证导入的数据格式
+      // Validate imported data format
       if (typeof importedData !== 'object') {
-        throw new Error('无效的数据格式');
+        throw new Error('Invalid data format');
       }
       
       chrome.storage.local.get(['timeData'], function(result) {
         const currentData = result.timeData || {};
         
-        // 合并数据
+        // Merge data
         const mergedData = { ...currentData };
         
         for (const domain in importedData) {
           if (mergedData[domain]) {
-            // 如果域名已存在，合并数据
+            // If domain already exists, merge data
             mergedData[domain].totalTime += importedData[domain].totalTime || 0;
             mergedData[domain].visits += importedData[domain].visits || 0;
             mergedData[domain].lastVisit = Math.max(
@@ -94,7 +94,7 @@ function importData() {
               importedData[domain].lastVisit || 0
             );
             
-            // 合并每日数据
+            // Merge daily data
             if (importedData[domain].daily) {
               if (!mergedData[domain].daily) {
                 mergedData[domain].daily = {};
@@ -109,54 +109,54 @@ function importData() {
               }
             }
           } else {
-            // 如果域名不存在，直接添加
+            // If domain doesn't exist, add it directly
             mergedData[domain] = importedData[domain];
           }
         }
         
         chrome.storage.local.set({ timeData: mergedData }, function() {
-          showStatusMessage('数据已导入', 'success');
+          showStatusMessage('Data imported', 'success');
         });
       });
     } catch (error) {
-      showStatusMessage('导入失败: ' + error.message, 'error');
+      showStatusMessage('Import failed: ' + error.message, 'error');
     }
   };
   
   reader.onerror = function() {
-    showStatusMessage('读取文件失败', 'error');
+    showStatusMessage('Failed to read file', 'error');
   };
   
   reader.readAsText(file);
 }
 
-// 显示状态消息
+// Display status message
 function showStatusMessage(message, type) {
   const statusElement = document.getElementById('status-message');
   statusElement.textContent = message;
   statusElement.className = 'status-message ' + type;
   
-  // 3秒后清除消息
+  // Clear message after 3 seconds
   setTimeout(function() {
     statusElement.textContent = '';
     statusElement.className = 'status-message';
   }, 3000);
 }
 
-// 初始化页面
+// Initialize page
 document.addEventListener('DOMContentLoaded', function() {
-  // 加载设置
+  // Load settings
   loadOptions();
   
-  // 保存按钮事件
+  // Save button event
   document.getElementById('save-btn').addEventListener('click', saveOptions);
   
-  // 清除数据按钮事件
+  // Clear data button event
   document.getElementById('clear-data-btn').addEventListener('click', clearAllData);
   
-  // 导出数据按钮事件
+  // Export data button event
   document.getElementById('export-data-btn').addEventListener('click', exportData);
   
-  // 导入数据按钮事件
+  // Import data button event
   document.getElementById('import-data-btn').addEventListener('click', importData);
 });
