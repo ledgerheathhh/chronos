@@ -36,6 +36,25 @@ function getStartOfMonth() {
   return startOfMonth.toISOString().split('T')[0];
 }
 
+// Apply theme based on settings
+function applyTheme() {
+  chrome.storage.local.get(['settings'], function(result) {
+    const settings = result.settings || {};
+    const theme = settings.theme || 'system';
+    
+    // Remove any existing theme classes
+    document.body.classList.remove('dark-theme', 'theme-system');
+    
+    // Apply the selected theme
+    if (theme === 'dark') {
+      document.body.classList.add('dark-theme');
+    } else if (theme === 'system') {
+      document.body.classList.add('theme-system');
+    }
+    // For 'light' theme, no class is needed as it's the default
+  });
+}
+
 // Display current website information
 function showCurrentSiteInfo() {
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
@@ -223,6 +242,9 @@ function exportData() {
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
+  // Apply theme before showing content
+  applyTheme();
+  
   // Display current website information
   showCurrentSiteInfo();
   

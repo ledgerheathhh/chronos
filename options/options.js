@@ -1,13 +1,16 @@
 // Save settings
 function saveOptions() {
   const timeFormat = document.getElementById('time-format').value;
+  const themeSetting = document.getElementById('theme-setting').value;
   
   chrome.storage.local.get(['settings'], function(result) {
     const settings = result.settings || {};
     settings.timeFormat = timeFormat;
+    settings.theme = themeSetting;
     
     chrome.storage.local.set({ settings: settings }, function() {
       showStatusMessage('Settings saved', 'success');
+      applyTheme(themeSetting);
     });
   });
 }
@@ -20,7 +23,30 @@ function loadOptions() {
     if (settings.timeFormat) {
       document.getElementById('time-format').value = settings.timeFormat;
     }
+    
+    if (settings.theme) {
+      document.getElementById('theme-setting').value = settings.theme;
+      applyTheme(settings.theme);
+    } else {
+      // Default to system theme if not set
+      document.getElementById('theme-setting').value = 'system';
+      applyTheme('system');
+    }
   });
+}
+
+// Apply theme based on setting
+function applyTheme(theme) {
+  // Remove any existing theme classes
+  document.body.classList.remove('dark-theme', 'theme-system');
+  
+  // Apply the selected theme
+  if (theme === 'dark') {
+    document.body.classList.add('dark-theme');
+  } else if (theme === 'system') {
+    document.body.classList.add('theme-system');
+  }
+  // For 'light' theme, no class is needed as it's the default
 }
 
 // Clear all data
@@ -166,4 +192,10 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Import data button event
   document.getElementById('import-data-btn').addEventListener('click', importData);
+  
+  // Add event listener for theme change
+  document.getElementById('theme-setting').addEventListener('change', function() {
+    const selectedTheme = this.value;
+    applyTheme(selectedTheme);
+  });
 });

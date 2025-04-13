@@ -5,6 +5,7 @@
 }
 
 :root {
+  /* Light Theme (Default) */
   --primary-color: #4a6cf7;
   --primary-light: #eef2ff;
   --secondary-color: #6c757d;
@@ -18,6 +19,36 @@
   --radius-sm: 6px;
   --radius-md: 10px;
   --transition: all 0.3s ease;
+}
+
+/* Dark Theme */
+body.dark-theme {
+  --primary-color: #6d8cff;
+  --primary-light: #2a3655;
+  --secondary-color: #a0aec0;
+  --text-color: #e2e8f0;
+  --text-light: #a0aec0;
+  --bg-color: #1a202c;
+  --card-bg: #2d3748;
+  --border-color: #4a5568;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* System Preference Dark Mode */
+@media (prefers-color-scheme: dark) {
+  body.theme-system {
+    --primary-color: #6d8cff;
+    --primary-light: #2a3655;
+    --secondary-color: #a0aec0;
+    --text-color: #e2e8f0;
+    --text-light: #a0aec0;
+    --bg-color: #1a202c;
+    --card-bg: #2d3748;
+    --border-color: #4a5568;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.2);
+  }
 }
 
 body {
