@@ -5,7 +5,8 @@
   "description": "Track and record the time you spend on various websites",
   "permissions": ["storage", "tabs", "activeTab"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
     "default_popup": "popup/popup.html",

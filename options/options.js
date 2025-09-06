@@ -1,3 +1,8 @@
+// Get today's date string (YYYY-MM-DD)
+function getTodayString() {
+  return new Date().toISOString().split('T')[0];
+}
+
 // Save settings
 function saveOptions() {
   const timeFormat = document.getElementById('time-format').value;
@@ -11,6 +16,8 @@ function saveOptions() {
     chrome.storage.local.set({ settings: settings }, function() {
       showStatusMessage('Settings saved', 'success');
       applyTheme(themeSetting);
+      // Notify popup.js about theme change
+      chrome.runtime.sendMessage({ action: 'themeChanged' });
     });
   });
 }
@@ -59,6 +66,8 @@ function clearAllData() {
       chrome.storage.local.clear(function() {
         chrome.storage.local.set({ settings: settings }, function() {
           showStatusMessage('All data has been cleared', 'success');
+          // Optionally notify background script to clear its cache
+          chrome.runtime.sendMessage({ action: 'clearTimeDataCache' });
         });
       });
     });
@@ -72,7 +81,7 @@ function exportData() {
     const dataStr = JSON.stringify(timeData, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
     
-    const exportFileDefaultName = `chronos-data-${new Date().toISOString().split('T')[0]}.json`;
+    const exportFileDefaultName = `chronos-data-${getTodayString()}.json`;
     
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
@@ -99,9 +108,20 @@ function importData() {
     try {
       const importedData = JSON.parse(e.target.result);
       
-      // Validate imported data format
-      if (typeof importedData !== 'object') {
-        throw new Error('Invalid data format');
+      // Basic validation for imported data structure
+      if (typeof importedData !== 'object' || importedData === null) {
+        throw new Error('Invalid data format: Expected an object.');
+      }
+
+      for (const domain in importedData) {
+        const siteData = importedData[domain];
+        if (typeof siteData !== 'object' || siteData === null ||
+            !('totalTime' in siteData) || !('visits' in siteData) || !('lastVisit' in siteData) || !('daily' in siteData)) {
+          throw new Error(`Invalid data format for domain: ${domain}. Missing required properties.`);
+        }
+        if (typeof siteData.totalTime !== 'number' || typeof siteData.visits !== 'number' || typeof siteData.lastVisit !== 'number' || typeof siteData.daily !== 'object') {
+          throw new Error(`Invalid data types for domain: ${domain}.`);
+        }
       }
       
       chrome.storage.local.get(['timeData'], function(result) {
@@ -113,8 +133,8 @@ function importData() {
         for (const domain in importedData) {
           if (mergedData[domain]) {
             // If domain already exists, merge data
-            mergedData[domain].totalTime += importedData[domain].totalTime || 0;
-            mergedData[domain].visits += importedData[domain].visits || 0;
+            mergedData[domain].totalTime = (mergedData[domain].totalTime || 0) + (importedData[domain].totalTime || 0);
+            mergedData[domain].visits = (mergedData[domain].visits || 0) + (importedData[domain].visits || 0);
             mergedData[domain].lastVisit = Math.max(
               mergedData[domain].lastVisit || 0,
               importedData[domain].lastVisit || 0
@@ -142,6 +162,8 @@ function importData() {
         
         chrome.storage.local.set({ timeData: mergedData }, function() {
           showStatusMessage('Data imported', 'success');
+          // Notify background script to update its cache
+          chrome.runtime.sendMessage({ action: 'updateTimeDataCache', data: mergedData });
         });
       });
     } catch (error) {
@@ -197,5 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('theme-setting').addEventListener('change', function() {
     const selectedTheme = this.value;
     applyTheme(selectedTheme);
+    // Notify popup.js about theme change
+    chrome.runtime.sendMessage({ action: 'themeChanged' });
   });
 });
