@@ -257,6 +257,7 @@ h2 i {
 .site-item {
   display: flex;
   justify-content: space-between;
+  align-items: center; /* Align items vertically in the middle */
   padding: 10px;
   border-bottom: 1px solid var(--border-color);
   transition: var(--transition);
@@ -289,7 +290,7 @@ h2 i {
 
 .site-domain {
   font-size: 14px;
-  max-width: 200px;
+  flex-grow: 1; /* Allow domain to take available space */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -297,10 +298,12 @@ h2 i {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0; /* Allow flex item to shrink below its content size */
 }
 
 .site-domain i {
   color: var(--primary-color);
+  flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
 .site-time {
@@ -310,6 +313,8 @@ h2 i {
   display: flex;
   align-items: center;
   gap: 5px;
+  flex-shrink: 0; /* Prevent time from shrinking */
+  margin-left: 10px; /* Add some space between domain and time */
 }
 
 footer {
