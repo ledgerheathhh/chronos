@@ -1,60 +1,83 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chronos - Website Usage Time Tracker</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="popup.css">
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1><i class="fas fa-clock"></i> Chronos</h1>
-      <p class="subtitle">Website Usage Time Tracker</p>
-    </header>
-    
-    <section class="current-site">
-      <h2><i class="fas fa-globe"></i> Current Website</h2>
-      <div class="site-info">
-        <div class="domain-name" id="current-domain"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
-        <div class="time-info">
-          <div class="time-item">
-            <span class="label"><i class="fas fa-calendar-day"></i> Today:</span>
-            <span class="value" id="today-time">0 minutes</span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chronos - Website Usage Time Tracker</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1><i class="fas fa-clock"></i> Chronos</h1>
+        <p class="subtitle">Website Usage Time Tracker</p>
+      </header>
+
+      <section class="current-site">
+        <h2><i class="fas fa-globe"></i> Current Website</h2>
+        <div class="site-info">
+          <div class="domain-name" id="current-domain">
+            <i class="fas fa-spinner fa-spin"></i> Loading...
           </div>
-          <div class="time-item">
-            <span class="label"><i class="fas fa-hourglass-half"></i> Total:</span>
-            <span class="value" id="total-time">0 minutes</span>
-          </div>
-          <div class="time-item">
-            <span class="label"><i class="fas fa-eye"></i> Visits:</span>
-            <span class="value" id="visit-count">0</span>
+          <div class="time-info">
+            <div class="time-item">
+              <span class="label"
+                ><i class="fas fa-calendar-day"></i> Today:</span
+              >
+              <span class="value" id="today-time">0 minutes</span>
+            </div>
+            <div class="time-item">
+              <span class="label"
+                ><i class="fas fa-hourglass-half"></i> Total:</span
+              >
+              <span class="value" id="total-time">0 minutes</span>
+            </div>
+            <div class="time-item">
+              <span class="label"><i class="fas fa-eye"></i> Visits:</span>
+              <span class="value" id="visit-count">0</span>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-    
-    <section class="top-sites">
-      <div class="section-header">
-        <h2><i class="fas fa-chart-bar"></i> Usage Time Ranking</h2>
-        <div class="time-filter">
-          <button class="filter-btn active" data-filter="today"><i class="fas fa-calendar-day"></i> Today</button>
-          <button class="filter-btn" data-filter="week"><i class="fas fa-calendar-week"></i> Week</button>
-          <button class="filter-btn" data-filter="month"><i class="fas fa-calendar-alt"></i> Month</button>
-          <button class="filter-btn" data-filter="all"><i class="fas fa-infinity"></i> All</button>
+      </section>
+
+      <section class="top-sites">
+        <div class="section-header">
+          <h2><i class="fas fa-chart-bar"></i> Usage Time Ranking</h2>
+          <div class="time-filter">
+            <button class="filter-btn active" data-filter="today">
+              <i class="fas fa-calendar-day"></i> Today
+            </button>
+            <button class="filter-btn" data-filter="week">
+              <i class="fas fa-calendar-week"></i> Week
+            </button>
+            <button class="filter-btn" data-filter="month">
+              <i class="fas fa-calendar-alt"></i> Month
+            </button>
+            <button class="filter-btn" data-filter="all">
+              <i class="fas fa-infinity"></i> All
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="sites-list" id="sites-list">
-        <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
-      </div>
-    </section>
-    
-    <footer>
-      <button id="options-btn" class="footer-btn"><i class="fas fa-cog"></i> Settings</button>
-      <button id="export-btn" class="footer-btn"><i class="fas fa-file-export"></i> Export</button>
-    </footer>
-  </div>
-  <script src="popup.js"></script>
-</body>
+        <div class="sites-list" id="sites-list">
+          <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading...
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <button id="options-btn" class="footer-btn">
+          <i class="fas fa-cog"></i> Settings
+        </button>
+        <button id="export-btn" class="footer-btn">
+          <i class="fas fa-file-export"></i> Export
+        </button>
+      </footer>
+    </div>
+    <script type="module" src="popup.js"></script>
+  </body>
 </html>

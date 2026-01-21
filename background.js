@@ -1,61 +1,57 @@
-// Extract domain from URL
-function extractDomain(url) {
-  if (!url) return null;
-  try {
-    const urlObj = new URL(url);
-    return urlObj.hostname;
-  } catch (e) {
-    console.error("URL parsing error:", e);
-    return null;
-  }
-}
+import { extractDomain, getTodayString } from "./utils/utils.js";
 
 // Store information about the current active tab
 let currentTab = {
   id: null,
   url: null,
   domain: null,
-  startTime: null
+  startTime: null,
 };
 
 // In-memory cache for time data
 let timeDataCache = {};
+let isDirty = false; // Flag to track if cache needs saving
 
 // Function to save timeDataCache to chrome.storage.local
 async function saveTimeDataToStorage() {
+  if (!isDirty) return;
   await chrome.storage.local.set({ timeData: timeDataCache });
+  isDirty = false;
+  console.log("Data saved to storage.");
 }
 
 // Update the usage time of the current tab
 function updateTimeSpent() {
   if (!currentTab.startTime || !currentTab.domain) return;
-  
+
   const now = Date.now();
   const timeSpent = now - currentTab.startTime;
-  
+
   // Only record if the time spent is more than 1 second
   if (timeSpent < 1000) return;
-  
+
   const domain = currentTab.domain;
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  
+  const today = getTodayString();
+
   if (!timeDataCache[domain]) {
     timeDataCache[domain] = {
       totalTime: 0,
       visits: 0,
       lastVisit: now,
-      daily: {}
+      daily: {},
     };
   }
-  
+
   if (!timeDataCache[domain].daily[today]) {
     timeDataCache[domain].daily[today] = 0;
   }
-  
+
   timeDataCache[domain].totalTime += timeSpent;
   timeDataCache[domain].daily[today] += timeSpent;
   timeDataCache[domain].lastVisit = now;
-  
+
+  isDirty = true;
+
   // Reset start time to continue tracking
   currentTab.startTime = now;
 }
@@ -64,28 +60,29 @@ function updateTimeSpent() {
 async function handleTabActivated(activeInfo) {
   // Save time for the previous tab
   updateTimeSpent();
-  
+
   try {
     const tab = await chrome.tabs.get(activeInfo.tabId);
     const domain = extractDomain(tab.url);
-    
+
     currentTab = {
       id: tab.id,
       url: tab.url,
       domain: domain,
-      startTime: Date.now()
+      startTime: Date.now(),
     };
-    
+
     if (domain) {
       if (!timeDataCache[domain]) {
         timeDataCache[domain] = {
           totalTime: 0,
           visits: 0,
           lastVisit: Date.now(),
-          daily: {}
+          daily: {},
         };
       }
       timeDataCache[domain].visits += 1;
+      isDirty = true;
     }
   } catch (e) {
     console.error("Error in handleTabActivated:", e);
@@ -94,35 +91,36 @@ async function handleTabActivated(activeInfo) {
 
 // When a tab is updated
 async function handleTabUpdated(tabId, changeInfo, tab) {
-  if (changeInfo.status === 'complete' && tabId === currentTab.id) {
+  if (changeInfo.status === "complete" && tabId === currentTab.id) {
     // Save time for the previous URL
     updateTimeSpent();
-    
+
     const domain = extractDomain(tab.url);
-    
+
     // If domain hasn't changed, just update the URL
     if (domain === currentTab.domain) {
       currentTab.url = tab.url;
       return;
     }
-    
+
     currentTab = {
       id: tab.id,
       url: tab.url,
       domain: domain,
-      startTime: Date.now()
+      startTime: Date.now(),
     };
-    
+
     if (domain) {
       if (!timeDataCache[domain]) {
         timeDataCache[domain] = {
           totalTime: 0,
           visits: 0,
           lastVisit: Date.now(),
-          daily: {}
+          daily: {},
         };
       }
       timeDataCache[domain].visits += 1;
+      isDirty = true;
     }
   }
 }
@@ -138,21 +136,36 @@ async function handleWindowFocusChanged(windowId) {
   } else {
     // Browser gained focus, restart timing
     try {
-      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+      const tabs = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
       if (tabs.length > 0) {
         const tab = tabs[0];
         const domain = extractDomain(tab.url);
-        
+
         currentTab = {
           id: tab.id,
           url: tab.url,
           domain: domain,
-          startTime: Date.now()
+          startTime: Date.now(),
         };
       }
     } catch (e) {
       console.error("Error in handleWindowFocusChanged:", e);
     }
+  }
+}
+
+// Handle idle state changes
+function handleIdleStateChanged(newState) {
+  console.log("Idle state changed to:", newState);
+  if (newState === "idle" || newState === "locked") {
+    updateTimeSpent();
+    currentTab.startTime = null;
+    saveTimeDataToStorage();
+  } else if (newState === "active") {
+    currentTab.startTime = Date.now();
   }
 }
 
@@ -163,10 +176,11 @@ setInterval(saveTimeDataToStorage, 10000);
 chrome.tabs.onActivated.addListener(handleTabActivated);
 chrome.tabs.onUpdated.addListener(handleTabUpdated);
 chrome.windows.onFocusChanged.addListener(handleWindowFocusChanged);
+chrome.idle.onStateChanged.addListener(handleIdleStateChanged);
 
 // Initialize
 async function initializeBackgroundScript() {
-  const result = await chrome.storage.local.get(['timeData']);
+  const result = await chrome.storage.local.get(["timeData"]);
   timeDataCache = result.timeData || {};
 
   try {
@@ -174,12 +188,12 @@ async function initializeBackgroundScript() {
     if (tabs.length > 0) {
       const tab = tabs[0];
       const domain = extractDomain(tab.url);
-      
+
       currentTab = {
         id: tab.id,
         url: tab.url,
         domain: domain,
-        startTime: Date.now()
+        startTime: Date.now(),
       };
     }
   } catch (e) {
@@ -191,39 +205,38 @@ initializeBackgroundScript();
 
 // Listen for messages from popup/options page
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'saveTimeData') {
+  if (message.action === "saveTimeData") {
     saveTimeDataToStorage().then(() => {
-      sendResponse({ status: 'success' });
+      sendResponse({ status: "success" });
     });
     return true; // Indicates that sendResponse will be called asynchronously
-  } else if (message.action === 'getTimeData') {
+  } else if (message.action === "getTimeData") {
     sendResponse({ timeData: timeDataCache });
-    return true; // Indicates that sendResponse will be called synchronously
-  } else if (message.action === 'clearTimeDataCache') {
-    timeDataCache = {}; // Clear in-memory cache
-    saveTimeDataToStorage(); // Persist empty cache to storage
-    sendResponse({ status: 'success' });
     return true;
-  } else if (message.action === 'updateTimeDataCache') {
+  } else if (message.action === "clearTimeDataCache") {
+    timeDataCache = {}; // Clear in-memory cache
+    isDirty = true;
+    saveTimeDataToStorage(); // Persist empty cache to storage
+    sendResponse({ status: "success" });
+    return true;
+  } else if (message.action === "updateTimeDataCache") {
     timeDataCache = message.data; // Update in-memory cache with imported data
-    sendResponse({ status: 'success' });
+    isDirty = true;
+    sendResponse({ status: "success" });
     return true;
   }
 });
 
 // Save data before browser closes (best effort)
 chrome.windows.onRemoved.addListener(async (windowId) => {
-  // Check if this was the last window
   const allWindows = await chrome.windows.getAll();
   if (allWindows.length === 0) {
-    updateTimeSpent(); // Ensure current tab's time is updated
+    updateTimeSpent();
     await saveTimeDataToStorage();
-    console.log("All windows closed, time data saved.");
   }
 });
 
 chrome.runtime.onSuspend.addListener(async () => {
-  updateTimeSpent(); // Ensure current tab's time is updated
+  updateTimeSpent();
   await saveTimeDataToStorage();
-  console.log("Extension suspending, time data saved.");
 });

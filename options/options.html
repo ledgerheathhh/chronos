@@ -1,88 +1,98 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>Chronos - Settings</title>
-  <link rel="stylesheet" href="options.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1><i class="fas fa-clock"></i> Chronos Settings</h1>
-      <p class="subtitle">Customize your website usage time tracking experience</p>
-    </header>
-    
-    <section class="settings-section">
-      <h2><i class="fas fa-database"></i> Data Management</h2>
-      <div class="setting-item">
-        <div class="setting-info">
-          <h3>Clear All Data</h3>
-          <p>Delete all recorded website usage time data. This action cannot be undone.</p>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chronos - Settings</title>
+    <link rel="stylesheet" href="options.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1><i class="fas fa-clock"></i> Chronos Settings</h1>
+        <p class="subtitle">
+          Customize your website usage time tracking experience
+        </p>
+      </header>
+
+      <section class="settings-section">
+        <h2><i class="fas fa-database"></i> Data Management</h2>
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>Clear All Data</h3>
+            <p>
+              Delete all recorded website usage time data. This action cannot be
+              undone.
+            </p>
+          </div>
+          <button id="clear-data-btn" class="danger-btn">Clear Data</button>
         </div>
-        <button id="clear-data-btn" class="danger-btn">Clear Data</button>
-      </div>
-      
-      <div class="setting-item">
-        <div class="setting-info">
-          <h3>Export Data</h3>
-          <p>Export your usage time data as a JSON file.</p>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>Export Data</h3>
+            <p>Export your usage time data as a JSON file.</p>
+          </div>
+          <button id="export-data-btn" class="primary-btn">Export</button>
         </div>
-        <button id="export-data-btn" class="primary-btn">Export</button>
-      </div>
-      
-      <div class="setting-item">
-        <div class="setting-info">
-          <h3>Import Data</h3>
-          <p>Import usage time data from a JSON file.</p>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>Import Data</h3>
+            <p>Import usage time data from a JSON file.</p>
+          </div>
+          <div class="import-container">
+            <input type="file" id="import-file" accept=".json" />
+            <button id="import-data-btn" class="primary-btn">Import</button>
+          </div>
         </div>
-        <div class="import-container">
-          <input type="file" id="import-file" accept=".json">
-          <button id="import-data-btn" class="primary-btn">Import</button>
+      </section>
+
+      <section class="settings-section">
+        <h2><i class="fas fa-sliders-h"></i> Display Settings</h2>
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>Time Format</h3>
+            <p>Choose your preferred time display format.</p>
+          </div>
+          <select id="time-format" class="select-input">
+            <option value="compact">Compact (1 hour 30 minutes)</option>
+            <option value="detailed">
+              Detailed (1 hour 30 minutes 45 seconds)
+            </option>
+          </select>
         </div>
-      </div>
-    </section>
-    
-    <section class="settings-section">
-      <h2><i class="fas fa-sliders-h"></i> Display Settings</h2>
-      <div class="setting-item">
-        <div class="setting-info">
-          <h3>Time Format</h3>
-          <p>Choose your preferred time display format.</p>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>Theme</h3>
+            <p>Choose your preferred theme for the extension.</p>
+          </div>
+          <select id="theme-setting" class="select-input">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="system">Follow System</option>
+          </select>
         </div>
-        <select id="time-format" class="select-input">
-          <option value="compact">Compact (1 hour 30 minutes)</option>
-          <option value="detailed">Detailed (1 hour 30 minutes 45 seconds)</option>
-        </select>
-      </div>
-      
-      <div class="setting-item">
-        <div class="setting-info">
-          <h3>Theme</h3>
-          <p>Choose your preferred theme for the extension.</p>
+      </section>
+
+      <section class="settings-section">
+        <h2><i class="fas fa-info-circle"></i> About</h2>
+        <div class="about-info">
+          <p>Chronos - Website Usage Time Tracker</p>
+          <p>Version: 1.0</p>
+          <p>Helps you track and manage your online time</p>
         </div>
-        <select id="theme-setting" class="select-input">
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-          <option value="system">Follow System</option>
-        </select>
-      </div>
-    </section>
-    
-    <section class="settings-section">
-      <h2><i class="fas fa-info-circle"></i> About</h2>
-      <div class="about-info">
-        <p>Chronos - Website Usage Time Tracker</p>
-        <p>Version: 1.0</p>
-        <p>Helps you track and manage your online time</p>
-      </div>
-    </section>
-    
-    <footer>
-      <div id="status-message" class="status-message"></div>
-      <button id="save-btn" class="primary-btn">Save Settings</button>
-    </footer>
-  </div>
-  <script src="options.js"></script>
-</body>
+      </section>
+
+      <footer>
+        <div id="status-message" class="status-message"></div>
+        <button id="save-btn" class="primary-btn">Save Settings</button>
+      </footer>
+    </div>
+    <script type="module" src="options.js"></script>
+  </body>
 </html>
