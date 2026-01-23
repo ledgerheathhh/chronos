@@ -21,12 +21,13 @@ function getStartOfMonth() {
   return startOfMonth.toISOString().split("T")[0];
 }
 
-// Fetch theme and apply
 function initTheme() {
   chrome.storage.local.get(["settings"], function (result) {
     const settings = result.settings || {};
     const theme = settings.theme || "system";
     applyTheme(theme);
+    const themeSelect = document.getElementById("theme-select");
+    if (themeSelect) themeSelect.value = theme;
   });
 }
 
@@ -215,6 +216,24 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   document.getElementById("export-btn").addEventListener("click", exportData);
+
+  const themeSelect = document.getElementById("theme-select");
+  chrome.storage.local.get(["settings"], function (result) {
+    const settings = result.settings || {};
+    themeSelect.value = settings.theme || "system";
+  });
+
+  themeSelect.addEventListener("change", function () {
+    const selectedTheme = this.value;
+    chrome.storage.local.get(["settings"], function (result) {
+      const settings = result.settings || {};
+      settings.theme = selectedTheme;
+      chrome.storage.local.set({ settings: settings }, function () {
+        applyTheme(selectedTheme);
+        chrome.runtime.sendMessage({ action: "themeChanged" });
+      });
+    });
+  });
 
   chrome.runtime.onMessage.addListener((message) => {
     if (message.action === "themeChanged") {
