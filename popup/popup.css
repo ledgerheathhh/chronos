@@ -57,6 +57,23 @@ body {
   color: var(--text-color);
   background-color: var(--bg-color);
   line-height: 1.5;
+  max-height: 600px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+body::-webkit-scrollbar {
+  width: 6px;
+}
+
+body::-webkit-scrollbar-track {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--secondary-color);
+  border-radius: 10px;
 }
 
 .container {
@@ -233,8 +250,6 @@ h2 i {
   background-color: var(--card-bg);
   border-radius: var(--radius-md);
   padding: 12px;
-  max-height: 250px;
-  overflow-y: auto;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border-color);
   scrollbar-width: thin;
