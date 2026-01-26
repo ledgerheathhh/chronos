@@ -338,6 +338,47 @@ footer {
   gap: 10px;
 }
 
+.expand-control {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+  padding: 10px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.expand-btn {
+  background-color: var(--primary-light);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-color);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  width: 100%;
+  justify-content: center;
+}
+
+.expand-btn:hover {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.expand-btn i {
+  transition: transform 0.3s ease;
+}
+
+.expand-btn:hover i {
+  transform: translateY(2px);
+}
+
 .footer-btn {
   background-color: var(--card-bg);
   border: 1px solid var(--border-color);

@@ -76,7 +76,11 @@ async function showCurrentSiteInfo() {
 // Display website ranking
 async function showSitesRanking(filter = "today") {
   const sitesListElement = document.getElementById("sites-list");
+  const expandControlElement = document.getElementById("expand-control");
+  const expandBtnElement = document.getElementById("expand-btn");
+  
   sitesListElement.innerHTML = '<div class="loading">Loading...</div>';
+  expandControlElement.style.display = "none";
 
   const response = await chrome.runtime.sendMessage({ action: "getTimeData" });
   const timeData = response.timeData || {};
@@ -149,30 +153,58 @@ async function showSitesRanking(filter = "today") {
     return;
   }
 
-  filteredData.forEach((item, index) => {
-    const siteItem = document.createElement("div");
-    siteItem.className = "site-item";
-    siteItem.style.animationDelay = `${index * 50}ms`;
+  const MAX_VISIBLE_ITEMS = 10;
+  const shouldCollapse = filter === "all" && filteredData.length > MAX_VISIBLE_ITEMS;
+  let displayData = filteredData;
+  let isExpanded = false;
 
-    const siteDomain = document.createElement("div");
-    siteDomain.className = "site-domain";
+  if (shouldCollapse) {
+    displayData = filteredData.slice(0, MAX_VISIBLE_ITEMS);
+    expandControlElement.style.display = "block";
+    setupExpandButton(expandBtnElement, () => {
+      isExpanded = !isExpanded;
+      displayData = isExpanded ? filteredData : filteredData.slice(0, MAX_VISIBLE_ITEMS);
+      const icon = isExpanded ? "fa-chevron-up" : "fa-chevron-down";
+      const text = isExpanded ? "Show Less" : "Show More";
+      expandBtnElement.innerHTML = `<i class="fas ${icon}"></i><span>${text}</span>`;
+      renderSitesList(displayData, filteredData);
+    });
+  }
 
-    let icon = "fa-globe";
-    if (index === 0) icon = "fa-trophy";
-    else if (index === 1) icon = "fa-medal";
-    else if (index === 2) icon = "fa-award";
+  function setupExpandButton(button, onClick) {
+    button.onclick = onClick;
+  }
 
-    siteDomain.innerHTML = `<i class="fas ${icon}"></i> ${item.domain}`;
-    siteDomain.title = item.domain;
+  renderSitesList(displayData, filteredData);
 
-    const siteTime = document.createElement("div");
-    siteTime.className = "site-time";
-    siteTime.innerHTML = `<i class="fas fa-clock"></i> ${formatTime(item.time)}`;
+  function renderSitesList(dataToShow, allData) {
+    sitesListElement.innerHTML = "";
+    dataToShow.forEach((item, index) => {
+      const actualIndex = allData.indexOf(item);
+      const siteItem = document.createElement("div");
+      siteItem.className = "site-item";
+      siteItem.style.animationDelay = `${actualIndex * 50}ms`;
 
-    siteItem.appendChild(siteDomain);
-    siteItem.appendChild(siteTime);
-    sitesListElement.appendChild(siteItem);
-  });
+      const siteDomain = document.createElement("div");
+      siteDomain.className = "site-domain";
+
+      let icon = "fa-globe";
+      if (actualIndex === 0) icon = "fa-trophy";
+      else if (actualIndex === 1) icon = "fa-medal";
+      else if (actualIndex === 2) icon = "fa-award";
+
+      siteDomain.innerHTML = `<i class="fas ${icon}"></i> ${item.domain}`;
+      siteDomain.title = item.domain;
+
+      const siteTime = document.createElement("div");
+      siteTime.className = "site-time";
+      siteTime.innerHTML = `<i class="fas fa-clock"></i> ${formatTime(item.time)}`;
+
+      siteItem.appendChild(siteDomain);
+      siteItem.appendChild(siteTime);
+      sitesListElement.appendChild(siteItem);
+    });
+  }
 }
 
 // Initialize filter buttons
