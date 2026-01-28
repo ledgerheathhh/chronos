@@ -150,25 +150,29 @@ async function showSitesRanking(filter = "today") {
   if (filteredData.length === 0) {
     sitesListElement.innerHTML =
       '<div class="no-data"><i class="fas fa-info-circle"></i> No data available</div>';
+    expandControlElement.style.display = "none";
     return;
   }
 
-  const MAX_VISIBLE_ITEMS = 10;
-  const shouldCollapse = filter === "all" && filteredData.length > MAX_VISIBLE_ITEMS;
+  const MAX_VISIBLE_ITEMS = 6;
+  const shouldCollapse = filteredData.length > MAX_VISIBLE_ITEMS;
   let displayData = filteredData;
   let isExpanded = false;
 
   if (shouldCollapse) {
     displayData = filteredData.slice(0, MAX_VISIBLE_ITEMS);
     expandControlElement.style.display = "block";
+    expandBtnElement.innerHTML = `<i class="fas fa-chevron-down"></i><span>Show More (${filteredData.length - MAX_VISIBLE_ITEMS} more)</span>`;
     setupExpandButton(expandBtnElement, () => {
       isExpanded = !isExpanded;
       displayData = isExpanded ? filteredData : filteredData.slice(0, MAX_VISIBLE_ITEMS);
       const icon = isExpanded ? "fa-chevron-up" : "fa-chevron-down";
-      const text = isExpanded ? "Show Less" : "Show More";
+      const text = isExpanded ? "Show Less" : `Show More (${filteredData.length - MAX_VISIBLE_ITEMS} more)`;
       expandBtnElement.innerHTML = `<i class="fas ${icon}"></i><span>${text}</span>`;
       renderSitesList(displayData, filteredData);
     });
+  } else {
+    expandControlElement.style.display = "none";
   }
 
   function setupExpandButton(button, onClick) {
