@@ -3,92 +3,136 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chronos - Website Usage Time Tracker</title>
+    <title>Chronos</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      media="print"
+      id="fa-stylesheet"
     />
     <link rel="stylesheet" href="popup.css" />
+    <style>
+      /* Critical CSS with variables for theme support */
+      :root {
+        --text-main: #1e293b;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --border-color: #e2e8f0;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --text-main: #f1f5f9;
+          --text-secondary: #cbd5e1;
+          --text-muted: #64748b;
+          --bg-main: #0f172a;
+          --bg-card: #1e293b;
+          --border-color: #334155;
+        }
+      }
+      body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg-main); color: var(--text-main); }
+      .container { padding: 16px; }
+      .card { background: var(--bg-card); border-radius: 8px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); color: var(--text-main); }
+      h1, h2 { color: var(--text-main); margin: 0; }
+      .stat-value { color: var(--text-main); font-weight: 600; }
+      .stat-label { color: var(--text-secondary); }
+      .site-name { color: var(--text-main); }
+      .site-duration { color: var(--text-secondary); }
+      .skeleton { background: linear-gradient(90deg, var(--border-color) 25%, var(--bg-main) 50%, var(--border-color) 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; border-radius: 4px; }
+      @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    </style>
   </head>
   <body>
     <div class="container">
       <header>
-        <h1><i class="fas fa-clock"></i> Chronos</h1>
-        <p class="subtitle">Website Usage Time Tracker</p>
-      </header>
-
-      <section class="current-site">
-        <h2><i class="fas fa-globe"></i> Current Website</h2>
-        <div class="site-info">
-          <div class="domain-name" id="current-domain">
-            <i class="fas fa-spinner fa-spin"></i> Loading...
-          </div>
-          <div class="time-info">
-            <div class="time-item">
-              <span class="label"
-                ><i class="fas fa-calendar-day"></i> Today:</span
-              >
-              <span class="value" id="today-time">0 minutes</span>
-            </div>
-            <div class="time-item">
-              <span class="label"
-                ><i class="fas fa-hourglass-half"></i> Total:</span
-              >
-              <span class="value" id="total-time">0 minutes</span>
-            </div>
-            <div class="time-item">
-              <span class="label"><i class="fas fa-eye"></i> Visits:</span>
-              <span class="value" id="visit-count">0</span>
-            </div>
-          </div>
+        <div class="brand">
+          <i class="fas fa-hourglass-half brand-icon"></i>
+          <h1>Chronos</h1>
         </div>
-      </section>
-
-      <section class="top-sites">
-        <div class="section-header">
-          <h2><i class="fas fa-chart-bar"></i> Usage Time Ranking</h2>
-          <div class="time-filter">
-            <button class="filter-btn active" data-filter="today">
-              <i class="fas fa-calendar-day"></i> Today
-            </button>
-            <button class="filter-btn" data-filter="week">
-              <i class="fas fa-calendar-week"></i> Week
-            </button>
-            <button class="filter-btn" data-filter="month">
-              <i class="fas fa-calendar-alt"></i> Month
-            </button>
-            <button class="filter-btn" data-filter="all">
-              <i class="fas fa-infinity"></i> All
-            </button>
-          </div>
-        </div>
-        <div class="sites-list" id="sites-list">
-          <div class="loading">
-            <i class="fas fa-spinner fa-spin"></i> Loading...
-          </div>
-        </div>
-        <div class="expand-control" id="expand-control" style="display: none;">
-          <button class="expand-btn" id="expand-btn">
-            <i class="fas fa-chevron-down"></i>
-            <span>Show More</span>
+        <div class="actions">
+          <button id="options-btn" class="btn-icon" title="Settings">
+            <i class="fas fa-cog"></i>
           </button>
         </div>
-      </section>
+      </header>
+
+      <!-- Current Site Card -->
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-globe"></i>
+          <h2>Current Website</h2>
+        </div>
+
+        <div class="current-site-content">
+          <!-- Loading Skeleton -->
+          <div
+            id="current-skeleton"
+            class="skeleton skeleton-rect"
+            style="height: 60px; display: none"
+          ></div>
+
+          <!-- Content -->
+          <div id="current-content">
+            <div class="domain-display">
+              <img id="current-favicon" src="" alt="" class="domain-favicon" />
+              <div class="domain-name" id="current-domain">Unknown Domain</div>
+            </div>
+
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-label">Today</span>
+                <span class="stat-value" id="today-time">0m</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Total</span>
+                <span class="stat-value" id="total-time">0m</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Visits</span>
+                <span class="stat-value" id="visit-count">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Sites Card -->
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-chart-bar"></i>
+          <h2>Top Sites</h2>
+        </div>
+
+        <div class="filter-tabs">
+          <button class="tab-btn active" data-filter="today">Today</button>
+          <button class="tab-btn" data-filter="week">Week</button>
+          <button class="tab-btn" data-filter="month">Month</button>
+          <button class="tab-btn" data-filter="all">All Time</button>
+        </div>
+
+        <div class="sites-list" id="sites-list">
+          <!-- Skeleton Items -->
+          <div class="skeleton skeleton-rect" style="height: 40px"></div>
+          <div class="skeleton skeleton-rect" style="height: 40px"></div>
+          <div class="skeleton skeleton-rect" style="height: 40px"></div>
+        </div>
+
+        <button id="expand-btn" class="expand-btn" style="display: none">
+          Show More
+        </button>
+      </div>
 
       <footer>
-        <select id="theme-select" class="footer-select">
-          <option value="light"><i class="fas fa-sun"></i> Light</option>
-          <option value="dark"><i class="fas fa-moon"></i> Dark</option>
-          <option value="system"><i class="fas fa-desktop"></i> System</option>
-        </select>
-        <button id="options-btn" class="footer-btn">
-          <i class="fas fa-cog"></i> Settings
+        <button id="export-btn" class="btn-icon" title="Export Data">
+          <i class="fas fa-file-export"></i>
         </button>
-        <button id="export-btn" class="footer-btn">
-          <i class="fas fa-file-export"></i> Export
+        <button id="theme-toggle" class="theme-toggle" title="Toggle Theme">
+          <i class="fas fa-moon"></i>
         </button>
       </footer>
     </div>
-    <script type="module" src="popup.js"></script>
+    <link rel="preload" href="popup.js" as="script" crossorigin="anonymous">
+    <script type="module" src="popup.js" defer></script>
   </body>
 </html>

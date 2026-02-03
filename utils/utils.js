@@ -23,19 +23,25 @@ export function extractDomain(url) {
  * @param {number} milliseconds
  * @returns {string}
  */
-export function formatTime(milliseconds) {
-  if (milliseconds < 1000) return "Less than 1 second";
+export function formatTime(milliseconds, compact = false) {
+  if (milliseconds < 1000) return "1s"; // Minimum display
 
   const seconds = Math.floor(milliseconds / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
 
+  if (compact) {
+    if (hours > 0) return `${hours}h ${minutes % 60}m`;
+    if (minutes > 0) return `${minutes}m`;
+    return `${seconds}s`;
+  }
+
   if (hours > 0) {
-    return `${hours} hour${hours > 1 ? "s" : ""} ${minutes % 60} minute${minutes % 60 !== 1 ? "s" : ""}`;
+    return `${hours}h ${minutes % 60}m`;
   } else if (minutes > 0) {
-    return `${minutes} minute${minutes !== 1 ? "s" : ""}`;
+    return `${minutes}m ${seconds % 60}s`;
   } else {
-    return `${seconds} second${seconds !== 1 ? "s" : ""}`;
+    return `${seconds}s`;
   }
 }
 
