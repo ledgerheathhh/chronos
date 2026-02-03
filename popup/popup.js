@@ -8,7 +8,40 @@ import {
 import { LoadingState, ErrorState, EmptyState, debounce } from "../utils/ui-components.js";
 
 function getFaviconUrl(domain) {
-  return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+  return `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+}
+
+const fallbackIcon = new Image();
+fallbackIcon.src = "icons/icon48.png";
+
+function loadFavicon(imgElement, domain) {
+  if (!domain) {
+    imgElement.src = "icons/icon48.png";
+    return;
+  }
+  
+  const faviconUrl = getFaviconUrl(domain);
+  const testImg = new Image();
+  
+  testImg.onload = () => {
+    if (testImg.naturalWidth > 1 && testImg.naturalHeight > 1) {
+      imgElement.src = faviconUrl;
+    } else {
+      imgElement.src = "icons/icon48.png";
+    }
+  };
+  
+  testImg.onerror = () => {
+    imgElement.src = "icons/icon48.png";
+  };
+  
+  setTimeout(() => {
+    if (!testImg.complete) {
+      imgElement.src = "icons/icon48.png";
+    }
+  }, 2000);
+  
+  testImg.src = faviconUrl;
 }
 
 // Display current website information with error handling
@@ -39,10 +72,7 @@ async function showCurrentSiteInfo() {
 
     requestAnimationFrame(() => {
       domainElement.textContent = domain;
-      faviconElement.src = getFaviconUrl(domain);
-      faviconElement.onerror = () => {
-        faviconElement.src = "icons/icon48.png";
-      };
+      loadFavicon(faviconElement, domain);
     });
 
     const response = await chrome.runtime.sendMessage({ action: "getTimeData" });
@@ -146,14 +176,25 @@ async function showSitesRanking(filter = "today") {
       const row = document.createElement("div");
       row.className = "site-row";
       row.title = `${item.domain}: ${formatTime(item.time, false)}`;
-      row.innerHTML = `
-        <div class="site-progress-bg" style="width: ${percentage}%"></div>
-        <img src="${getFaviconUrl(item.domain)}" class="site-icon" onerror="this.src='icons/icon48.png'" />
-        <div class="site-info">
-          <span class="site-name">${item.domain}</span>
-          <span class="site-duration">${formatTime(item.time, true)}</span>
-        </div>
+      
+      const progressBg = document.createElement("div");
+      progressBg.className = "site-progress-bg";
+      progressBg.style.width = `${percentage}%`;
+      
+      const img = document.createElement("img");
+      img.className = "site-icon";
+      loadFavicon(img, item.domain);
+      
+      const siteInfo = document.createElement("div");
+      siteInfo.className = "site-info";
+      siteInfo.innerHTML = `
+        <span class="site-name">${item.domain}</span>
+        <span class="site-duration">${formatTime(item.time, true)}</span>
       `;
+      
+      row.appendChild(progressBg);
+      row.appendChild(img);
+      row.appendChild(siteInfo);
       fragment.appendChild(row);
     });
 
