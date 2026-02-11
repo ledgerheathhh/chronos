@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chronos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -14,24 +20,36 @@
     <style>
       /* Critical CSS with variables for theme support */
       :root {
-        --text-main: #1e293b;
-        --text-secondary: #475569;
-        --text-muted: #94a3b8;
-        --bg-main: #f8fafc;
+        --text-main: #0b0f16;
+        --text-secondary: #374151;
+        --text-muted: #6b7280;
+        --bg-main: #ffffff;
         --bg-card: #ffffff;
         --border-color: #e2e8f0;
+        --glow-a: #f5f6f7;
+        --glow-b: #eeeeee;
       }
       @media (prefers-color-scheme: dark) {
         :root {
-          --text-main: #f1f5f9;
-          --text-secondary: #cbd5e1;
-          --text-muted: #64748b;
-          --bg-main: #0f172a;
-          --bg-card: #1e293b;
-          --border-color: #334155;
+          --text-main: #f9fafb;
+          --text-secondary: #d1d5db;
+          --text-muted: #9ca3af;
+          --bg-main: #000000;
+          --bg-card: #0b0b0c;
+          --border-color: #1f2937;
+          --glow-a: #060607;
+          --glow-b: #0a0a0c;
         }
       }
-      body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg-main); color: var(--text-main); }
+      body {
+        margin: 0;
+        font-family: "Sora", system-ui, -apple-system, sans-serif;
+        background:
+          radial-gradient(120px 120px at 20% 10%, var(--glow-a), transparent 70%),
+          radial-gradient(180px 180px at 90% 0%, var(--glow-b), transparent 70%),
+          var(--bg-main);
+        color: var(--text-main);
+      }
       .container { padding: 16px; }
       .card { background: var(--bg-card); border-radius: 8px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); color: var(--text-main); }
       h1, h2 { color: var(--text-main); margin: 0; }

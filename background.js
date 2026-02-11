@@ -12,9 +12,35 @@ let currentTab = {
 let timeDataCache = {};
 let isDirty = false; // Flag to track if cache needs saving
 
+const RETENTION_DAYS = 90;
+const PERSISTENCE_ALARM_NAME = "chronos-persist";
+const PERSISTENCE_INTERVAL_MINUTES = 1;
+
+function getLocalDateString(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function pruneDailyHistory() {
+  const cutoff = Date.now() - RETENTION_DAYS * 24 * 60 * 60 * 1000;
+  const cutoffString = getLocalDateString(new Date(cutoff));
+
+  Object.values(timeDataCache).forEach((domainEntry) => {
+    if (!domainEntry || !domainEntry.daily) return;
+    Object.keys(domainEntry.daily).forEach((dateKey) => {
+      if (dateKey < cutoffString) {
+        delete domainEntry.daily[dateKey];
+      }
+    });
+  });
+}
+
 // Function to save timeDataCache to chrome.storage.local
 async function saveTimeDataToStorage() {
   if (!isDirty) return;
+  pruneDailyHistory();
   await chrome.storage.local.set({ timeData: timeDataCache });
   isDirty = false;
   console.log("Data saved to storage.");
@@ -158,30 +184,60 @@ async function handleWindowFocusChanged(windowId) {
 }
 
 // Handle idle state changes
-function handleIdleStateChanged(newState) {
+async function handleIdleStateChanged(newState) {
   console.log("Idle state changed to:", newState);
   if (newState === "idle" || newState === "locked") {
     updateTimeSpent();
     currentTab.startTime = null;
-    saveTimeDataToStorage();
+    await saveTimeDataToStorage();
   } else if (newState === "active") {
-    currentTab.startTime = Date.now();
+    try {
+      const tabs = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      if (tabs.length > 0) {
+        const tab = tabs[0];
+        const domain = extractDomain(tab.url);
+        currentTab = {
+          id: tab.id,
+          url: tab.url,
+          domain: domain,
+          startTime: Date.now(),
+        };
+      } else {
+        currentTab.startTime = Date.now();
+      }
+    } catch (e) {
+      console.error("Error in handleIdleStateChanged:", e);
+      currentTab.startTime = Date.now();
+    }
   }
 }
 
-// Periodically save data (every 10 seconds)
-setInterval(saveTimeDataToStorage, 10000);
+function initializePersistenceAlarm() {
+  chrome.alarms.create(PERSISTENCE_ALARM_NAME, {
+    periodInMinutes: PERSISTENCE_INTERVAL_MINUTES,
+  });
+}
 
 // Register event listeners
 chrome.tabs.onActivated.addListener(handleTabActivated);
 chrome.tabs.onUpdated.addListener(handleTabUpdated);
 chrome.windows.onFocusChanged.addListener(handleWindowFocusChanged);
 chrome.idle.onStateChanged.addListener(handleIdleStateChanged);
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === PERSISTENCE_ALARM_NAME) {
+    saveTimeDataToStorage();
+  }
+});
 
 // Initialize
 async function initializeBackgroundScript() {
   const result = await chrome.storage.local.get(["timeData"]);
   timeDataCache = result.timeData || {};
+
+  initializePersistenceAlarm();
 
   try {
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
