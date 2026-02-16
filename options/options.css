@@ -5,6 +5,7 @@
   --primary-hover: #0b1220; /* Deeper near-black */
   --primary-light: #e5e7eb; /* Light gray */
   --secondary-color: #475569; /* Slate 600 */
+  --accent-color: #111827; /* Neutral accent */
 
   --text-main: #0b0f16; /* Near-black */
   --text-secondary: #374151; /* Gray 700 */
@@ -34,6 +35,8 @@ body.dark-theme {
   --primary-color: #f9fafb; /* Near-white */
   --primary-hover: #e5e7eb; /* Light gray */
   --primary-light: #1f2937; /* Dark gray */
+  --secondary-color: #9ca3af; /* Gray 400 */
+  --accent-color: #f3f4f6; /* Light gray for contrast on dark bg */
 
   --text-main: #f9fafb; /* Near-white */
   --text-secondary: #d1d5db; /* Gray 300 */
@@ -53,6 +56,8 @@ body.dark-theme {
     --primary-color: #f9fafb;
     --primary-hover: #e5e7eb;
     --primary-light: #1f2937;
+    --secondary-color: #9ca3af;
+    --accent-color: #f3f4f6;
     --text-main: #f9fafb;
     --text-secondary: #d1d5db;
     --text-muted: #9ca3af;
