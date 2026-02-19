@@ -4,7 +4,7 @@
   --primary-color: #111827; /* Near-black */
   --primary-hover: #0b1220; /* Deeper near-black */
   --primary-light: #e5e7eb; /* Light gray */
-  --secondary-color: #4b5563; /* Gray 600 */
+  --secondary-color: #475569; /* Slate 600 */
   --accent-color: #111827; /* Neutral accent */
 
   --text-main: #0b0f16; /* Near-black */
@@ -16,6 +16,9 @@
   --bg-hover: #f4f5f7; /* Light gray */
 
   --border-light: #e2e8f0; /* Slate 200 */
+  /* Compatibility aliases used by shared/inline styles */
+  --border-color: var(--border-light);
+  --text-light: var(--text-muted);
 
   --glow-a: #f5f6f7;
   --glow-b: #eeeeee;
@@ -55,14 +58,10 @@ body.dark-theme {
   --bg-main: #000000; /* Pure black */
   --bg-card: #0b0b0c; /* Near black */
   --bg-hover: #111214; /* Dark hover */
-
   --border-light: #1f2937; /* Slate 800 */
 
   --glow-a: #060607;
   --glow-b: #0a0a0c;
-
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -81,8 +80,6 @@ body.dark-theme {
     --border-light: #1f2937;
     --glow-a: #060607;
     --glow-b: #0a0a0c;
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
   }
 }
 
