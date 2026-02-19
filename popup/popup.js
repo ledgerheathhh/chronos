@@ -224,14 +224,23 @@ function getStartOfMonth() {
   return startOfMonth.toISOString().split("T")[0];
 }
 
+function applyThemeState(theme) {
+  updateThemeIcon(theme);
+  applyTheme(theme);
+}
+
+function handleStorageChange(changes, areaName) {
+  if (areaName !== "local" || !changes.settings) return;
+  const settings = changes.settings.newValue || {};
+  applyThemeState(settings.theme || "system");
+}
+
 function initThemeToggle() {
   const themeToggle = document.getElementById("theme-toggle");
 
   chrome.storage.local.get(["settings"], (result) => {
     const settings = result.settings || {};
-    const currentTheme = settings.theme || "system";
-    updateThemeIcon(currentTheme);
-    applyTheme(currentTheme);
+    applyThemeState(settings.theme || "system");
   });
 
   themeToggle.addEventListener("click", () => {
@@ -243,8 +252,7 @@ function initThemeToggle() {
 
       settings.theme = nextTheme;
       chrome.storage.local.set({ settings }, () => {
-        applyTheme(nextTheme);
-        updateThemeIcon(nextTheme);
+        applyThemeState(nextTheme);
         chrome.runtime.sendMessage({ action: "themeChanged" });
       });
     });
@@ -285,6 +293,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (faLink) {
     faLink.media = 'all';
   }
+  chrome.storage.onChanged.addListener(handleStorageChange);
+  window.addEventListener("unload", () => {
+    chrome.storage.onChanged.removeListener(handleStorageChange);
+  });
   
   initFilterButtons();
   

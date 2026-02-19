@@ -1,5 +1,14 @@
 import { getTodayString, applyTheme } from "../utils/utils.js";
 
+function syncThemeUI(settings = {}) {
+  const themeSetting = settings.theme || "system";
+  const themeSelect = document.getElementById("theme-setting");
+  if (themeSelect.value !== themeSetting) {
+    themeSelect.value = themeSetting;
+  }
+  applyTheme(themeSetting);
+}
+
 // Save settings
 function saveOptions() {
   const timeFormat = document.getElementById("time-format").value;
@@ -28,14 +37,13 @@ function loadOptions() {
       document.getElementById("time-format").value = settings.timeFormat;
     }
 
-    if (settings.theme) {
-      document.getElementById("theme-setting").value = settings.theme;
-      applyTheme(settings.theme);
-    } else {
-      document.getElementById("theme-setting").value = "system";
-      applyTheme("system");
-    }
+    syncThemeUI(settings);
   });
+}
+
+function handleStorageChange(changes, areaName) {
+  if (areaName !== "local" || !changes.settings) return;
+  syncThemeUI(changes.settings.newValue || {});
 }
 
 // Clear all data
@@ -157,6 +165,10 @@ function showStatusMessage(message, type) {
 // Initialize page
 document.addEventListener("DOMContentLoaded", function () {
   loadOptions();
+  chrome.storage.onChanged.addListener(handleStorageChange);
+  window.addEventListener("unload", () => {
+    chrome.storage.onChanged.removeListener(handleStorageChange);
+  });
 
   document.getElementById("save-btn").addEventListener("click", saveOptions);
   document
